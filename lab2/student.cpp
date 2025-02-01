@@ -1,9 +1,9 @@
 /*******************************************************************************
  * Filename: student.cpp
- * Author  : 
+ * Author  : Ryan Hajtovik
  * Version : 1.0
  * Date    : January 1, 2025
- * Description: Computes the GCD of two command-line arguments.
+ * Description: Prints students in class and failing students
  * Pledge  : I pledge my honor that I have abided by the Stevens Honor System.
  ******************************************************************************/
 
@@ -15,11 +15,11 @@ using namespace std;
 
 class Student {
 public:
-    Student(string first_name, string last_name, int id, float gpa) : first_{first_name}, last_{last_name}, id_{id}, gpa_{gpa} {}
+    Student(string first_name, string last_name, float gpa, int id) : first_{first_name}, last_{last_name}, gpa_{gpa}, id_{id} {}
 
     void print_info() const {
-        cout << first_ << ' ' << last_ << ', ' << fixed << setprecision(2) << gpa_ 
-            << ', ' << id_ << endl;
+        cout << first_ << " " << last_ << ", GPA: " << fixed << setprecision(2) << gpa_ 
+            << ", ID: " << id_ << endl;
     }
 
     float get_gpa() const {
@@ -30,7 +30,6 @@ private:
     string first_, last_;
     float gpa_;
     int id_;
-
 };
 
 /* 

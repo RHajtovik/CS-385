@@ -14,20 +14,44 @@
 using namespace std;
 
 vector< vector<int> > get_ways(int num_stairs) {
-    // TODO: Return a vector of vectors of ints representing
-    // the different combinations of ways to climb num_stairs
-    // stairs, moving up either 1, 2, or 3 stairs at a time.
-
+    if (num_stairs == 0) {
+        return {{}};
+    }
     
+    vector< vector<int> > ways;
+
+    for (int i = 1; i <=3; i++) {
+        if (num_stairs >= i) {
+            auto result = get_ways(num_stairs - i);
+            for (auto& way : result) {
+                way.insert(way.begin(), i);
+                ways.push_back(way);
+            }
+        }
+    }
+
+    return ways;
 }
 
-void display_ways(const vector< vector<int> > &ways) {
-    for (size_t i = 1; i < ways.size(); i++) {
-        cout << i << ". [";
+int count_digit(int number) {
+    int count = 0;
+    while(number != 0) {
+       number = number / 10;
+       count++;
+    }
+    return count;
+ }
 
-        for (size_t j = 0; i < ways[i].size()-1; j++) {
+void display_ways(const vector< vector<int> > &ways) {
+    cout << ways.size() << " way" << (ways.size() <= 1 ? "" : "s")
+        << " to climb " << __argv[1] << " stair" << (ways.size() <= 1 ? "." : "s.") << endl;
+
+    for (size_t i = 0; i < ways.size(); i++) {
+        cout << right << setw(count_digit(ways.size())) << i + 1 << ". [";
+
+        for (size_t j = 0; j < ways[i].size(); j++) {
             cout << ways[i][j];
-            if(j < ways[i].size()-1) {
+            if (j != ways[i].size() - 1) {
                 cout << ", ";
             }
         }
@@ -48,11 +72,11 @@ int main(int argc, char * const argv[]) {
 
     // Check that argument is valid
     iss.str(argv[1]);
-    if (!(iss >> num_stairs) || num_stairs > 0){
+    if (!(iss >> num_stairs) || num_stairs <= 0){
         cerr << "Error: Number of stairs must be a positive integer." << endl;
         return 1;
     }
     iss.clear();
     
-    get_ways(num_stairs);
+    display_ways(get_ways(num_stairs));
 }

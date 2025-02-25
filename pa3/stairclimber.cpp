@@ -23,9 +23,9 @@ vector< vector<int> > get_ways(int num_stairs) {
     for (int i = 1; i <=3; i++) {
         if (num_stairs >= i) {
             auto result = get_ways(num_stairs - i);
-            for (auto& way : result) {
-                way.insert(way.begin(), i);
-                ways.push_back(way);
+            for (auto& way : result) {                  // for each vector(way) in vector of vectors(result)
+                way.insert(way.begin(), i);             // insert i to the beginining of the way vector
+                ways.push_back(way);                    // add entire way vector to the end of the ways vector
             }
         }
     }
@@ -33,6 +33,7 @@ vector< vector<int> > get_ways(int num_stairs) {
     return ways;
 }
 
+// Count the digits for setw
 int count_digit(int number) {
     int count = 0;
     while(number != 0) {
@@ -43,20 +44,22 @@ int count_digit(int number) {
  }
 
 void display_ways(const vector< vector<int> > &ways) {
-    cout << ways.size() << " way" << (ways.size() <= 1 ? "" : "s")
-        << " to climb " << __argv[1] << " stair" << (ways.size() <= 1 ? "." : "s.") << endl;
 
-    for (size_t i = 0; i < ways.size(); i++) {
-        cout << right << setw(count_digit(ways.size())) << i + 1 << ". [";
+    // Print out y way(s) to climb x stair(s)
+    cout << ways.size() << " way" << (ways.size() == 1 ? "" : "s")
+        << " to climb " << ways[0].size() << " stair" << (ways.size() == 1 ? "." : "s.") << endl;
 
-        for (size_t j = 0; j < ways[i].size(); j++) {
-            cout << ways[i][j];
-            if (j != ways[i].size() - 1) {
-                cout << ", ";
+    for (size_t i = 0; i < ways.size(); i++) {                                  // Loop through each outer vector in ways
+        cout << right << setw(count_digit(ways.size())) << i + 1 << ". [";      // Print and align number
+
+        for (size_t j = 0; j < ways[i].size(); j++) {                           // Loop through each element the inner vector
+            cout << ways[i][j];                                                 // print that element
+            if (j != ways[i].size() - 1) {                                      // check j is not second to last element
+                cout << ", ";                                                   // print ", " if multiple more elements remain
             }
         }
 
-        cout << "]" << endl;
+        cout << "]" << endl;                                                    
     }
 }
 
@@ -66,7 +69,7 @@ int main(int argc, char * const argv[]) {
 
     // Check for correct arguments
     if (argc != 2) {
-        cerr << "Usage ./stairclimber <number of stairs>" << endl;
+        cerr << "Usage: ./stairclimber <number of stairs>" << endl;
         return 1;
     }
 

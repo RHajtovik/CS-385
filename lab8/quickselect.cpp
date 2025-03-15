@@ -16,7 +16,7 @@ size_t lomuto_partition(int array[], size_t left, size_t right) {
     // Partition the whole array
     int pivot = array[left];
     size_t s = left;
-    for(size_t i = left + 1; left < right; left++) {
+    for(size_t i = left + 1; left <= right; i++) {
         if(array[i] < pivot) {
             s++;
             swap(array[s], array[i]);
@@ -27,9 +27,12 @@ size_t lomuto_partition(int array[], size_t left, size_t right) {
 }
 
 int quick_select(int array[], size_t left, size_t right, size_t k) {
-    // TODO
-    // DO NOT change the function header in any way, otherwise you will lose points.
-    return 0;
+    size_t s = lomuto_partition(array, left, right);
+    if(s == k-1) return array[s];
+    
+    else if(s > k-1) return quick_select(array, left, s-1, k);
+    
+    else return quick_select(array, s+1, right, k);
 }
 
 int quick_select(int array[], const size_t length, size_t k) {
@@ -87,9 +90,19 @@ int main(int argc, char *argv[]) {
         cerr << "Error: Sequence of integers not received." << endl;
         return 1;
     }
-    // TODO - error checking k against the size of the input
 
-    // TODO - call the quick_select function and display the result
+    // Error check: k should not be greater than the number of elements
+    if (static_cast<size_t>(k) > num_values) {
+        cerr << "Error: k is larger than the number of elements in the sequence." << endl;
+        return 1;
+    }
+
+    // Convert vector to array for quick_select function
+    int *array = values.data();
+
+    // Call quick_select and print the result
+    int result = quick_select(array, num_values, k);
+    cout << "Smallest element " << k << ": " << result << endl;
 
     return 0;
 }

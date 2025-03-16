@@ -128,5 +128,4 @@ int main(int argc, char * const argv[]) {
     
     solveWaterJugProblem(capA, capB, capC, goalA, goalB, goalC);
     return 0;
-
 }

@@ -16,7 +16,7 @@ size_t lomuto_partition(int array[], size_t left, size_t right) {
     // Partition the whole array
     int pivot = array[left];
     size_t s = left;
-    for(size_t i = left + 1; left <= right; i++) {
+    for(size_t i = left + 1; i <= right; i++) {
         if(array[i] < pivot) {
             s++;
             swap(array[s], array[i]);
@@ -92,16 +92,13 @@ int main(int argc, char *argv[]) {
     }
 
     // Error check: k should not be greater than the number of elements
-    if (static_cast<size_t>(k) > num_values) {
-        cerr << "Error: k is larger than the number of elements in the sequence." << endl;
+    if (k > num_values) {
+        cerr << "Error: Cannot find smallest element " << k << " with only " << num_values << (num_values == 1 ? " value." : " values.") << endl;
         return 1;
     }
 
-    // Convert vector to array for quick_select function
-    int *array = values.data();
-
     // Call quick_select and print the result
-    int result = quick_select(array, num_values, k);
+    int result = quick_select(values.data(), num_values, k);
     cout << "Smallest element " << k << ": " << result << endl;
 
     return 0;

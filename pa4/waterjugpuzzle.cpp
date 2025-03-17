@@ -2,7 +2,7 @@
  * Name        : waterjugpuzzle.cpp
  * Author      : Ryan Hajtovik
  * Date        : March 12, 2025
- * Description : Lists the number of ways to climb n stairs.
+ * Description : Solve the Water Jug Problem using BFS
  * Pledge      : I pledge my honor that I have abided by the Stevens Honor System
  ******************************************************************************/
 #include <iostream>
@@ -10,19 +10,22 @@
 #include <vector>
 #include <set>
 #include <queue>
+#include <tuple>
 
 using namespace std;
 
+// Represent a state or snapshot while the algorithm is solving
 struct State {
     int a, b, c;
-    string path;
+    string path;    // store path as a sting for faster printing
 
-    State(int a, int b, int c, string path): a(a), b(b), c(c), path(path) {}
+    State(int a, int b, int c, string path): a(a), b(b), c(c), path(path) {} // Constructor to initialize the state with given water levels and path history
 };
 
+// Comparison struct to allow sorting and uniqueness in set<State, Compare>
 struct Compare {
-    bool operator()(const State& s1, const State& s2) const {
-        return tie(s1.a, s1.b, s1.c) < tie(s2.a, s2.b, s2.c);
+    bool operator()(const State &s1, const State &s2) const {   // Overload the operator() to define the sorting order for set<State, Compare>
+        return tie(s1.a, s1.b, s1.c) < tie(s2.a, s2.b, s2.c);   // Compare states lexicographically: first by 'a', then 'b', then 'c'
     }
 };
 
@@ -35,39 +38,43 @@ void solveWaterJugProblem(const int &capA, const int &capB, const int &capC, con
     q.push(initial);
     visited.insert(initial);
 
-    // Define the pouring actions: (from, to)
+    // Defines the pouring actions: (from, to)
     vector<pair<int, int>> actions = {
         {2, 0}, {1, 0}, {2, 1}, {0, 1}, {1, 2}, {0, 2}
     };
 
+    // BFS loop
     while (!q.empty()) {
         State current = q.front();
         q.pop();
 
-        // If the goal state is reached, print the path and exit
+        // Base Case: If the goal state is reached, print the path and exit
         if (current.a == goalA && current.b == goalB && current.c == goalC) {
             cout << current.path;
             return;
         }
 
+        // Try all possible pouring actions
         for (auto action : actions) {
             int from = action.first, to = action.second;
-            int jug[3] = {current.a, current.b, current.c};
+            int jug[3] = {current.a, current.b, current.c}; 
             int capacities[3] = {capA, capB, capC};
 
             // Calculate the maximum pourable amount
             int pourAmount = min(jug[from], capacities[to] - jug[to]);
+
+            // Check if pour is possible
             if (pourAmount > 0) {
                 jug[from] -= pourAmount;
                 jug[to] += pourAmount;
 
-                // Create the next state
+                // Create the next state after pour
                 State nextState(jug[0], jug[1], jug[2], current.path);
-                nextState.path += "Pour " + to_string(pourAmount) + " gallons from "
+                nextState.path += "Pour " + to_string(pourAmount) + (pourAmount == 1 ? " gallon" : " gallons") + " from "
                                 + char('A' + from) + " to " + char('A' + to) + ". ("
                                 + to_string(nextState.a) + ", " + to_string(nextState.b) + ", " + to_string(nextState.c) + ")\n";
 
-                // If this state hasn't been visited, enqueue it
+                // If the new state hasn't been visited, enqueue it
                 if (visited.find(nextState) == visited.end()) {
                     visited.insert(nextState);
                     q.push(nextState);
@@ -86,8 +93,8 @@ bool validateInputs(char * const argv[], int &capA, int &capB, int &capC, int &g
     // Validate and set capacities
     for(int i = 0; i < 3; i++) {
         istringstream iss(argv[i+1]);
-        if(!(iss >> *capactities[i]) || *capactities[i] < 0) {
-            cerr << "Error: Invalid capacity " << argv[i+1] << " for jug " << char('A' + i) << "." << endl;
+        if(!(iss >> *capactities[i]) || *capactities[i] <= 0) {
+            cerr << "Error: Invalid capacity \'" << argv[i+1] << "\' for jug " << char('A' + i) << "." << endl;
             return false;
         }
     }
@@ -96,16 +103,20 @@ bool validateInputs(char * const argv[], int &capA, int &capB, int &capC, int &g
     for(int i = 0; i < 3; i++) {
         istringstream iss(argv[i+4]);
         if(!(iss >> *goals[i]) || *goals[i] < 0) {
-            cerr << "Error: Invalid goal " << argv[i+4] << " for jug " << char('A' + i) << "." << endl;
+            cerr << "Error: Invalid goal \'" << argv[i+4] << "\' for jug " << char('A' + i) << "." << endl;
             return false;
         }
+    }
 
+    // Validate that capacities are greater than goals
+    for(int i = 0; i < 3; i++) {
         if(*goals[i] > *capactities[i]) {
             cerr << "Error: Goal cannot exceed capacity of jug " << char('A' + i) << "." << endl;
             return false;
         }
     }
 
+    // Validate that total gallons in goal state are equal to cap c
     if(goalA + goalB + goalC != capC) {
         cerr << "Error: Total gallons in goal state must be equal to the capacity of jug C." << endl;
         return false;
